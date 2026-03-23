@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), 
+                        url("images/img3.jpeg");
+            overflow: hidden;
+            background-size:cover;
+            animation: fadeInPage 1.2s ease-in-out;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 40px;
+            border-radius: 20px;
+            width: 380px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            animation: slideUpFade 0.9s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        h2 {
+            margin-bottom: 5px;
+            font-size: 26px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 25px;
+            display: block;
+        }
+
+        .input-group {
+            position: relative;
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        .input-group i:not(.eye) {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 15px 14px 45px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            outline: none;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        input:focus {
+            background: rgba(0, 0, 0, 0.5);
+            border-color: #ff7a18;
+            box-shadow: 0 0 15px rgba(255, 122, 24, 0.4);
+            transform: translateY(-2px);
+        }
+
+        input:focus + i {
+            color: #ff7a18 !important;
+        }
+
+        .eye {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.6);
+            transition: 0.3s;
+        }
+
+        .eye:hover {
+            color: white;
+        }
+
+        /* Animated Login Button */
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #ff7a18, #ff4b2b);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 15px rgba(255, 75, 43, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(255, 75, 43, 0.4);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        /* Shine sweep animation on hover */
+        button::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            top: 0;
+            left: -100%;
+            transform: skewX(-30deg);
+            transition: 0.5s;
+        }
+
+        button:hover::after {
+            left: 100%;
+        }
+
+        .divider {
+            margin: 25px 0;
+            display: flex;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+        }
+
+        .divider::before, .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .divider::before { margin-right: 10px; }
+        .divider::after { margin-left: 10px; }
+
+        .b2 {
+            background: rgba(255, 255, 255, 0.15);
+            margin-top: 10px;
+            box-shadow: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-weight: normal;
+        }
+
+        .b2:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Custom Modern Keyframes */
+        @keyframes fadeInPage {
+            from { opacity: 0; filter: brightness(0.5); }
+            to { opacity: 1; filter: brightness(1); }
+        }
+
+        @keyframes slideUpFade {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>FindMyClass</h2>
+        <span class="subtitle">Welcome</span>
+        <div class="input-group">
+            <i class="fa fa-envelope"></i>
+            <input type="email" id="email" placeholder="Email Address">
+        </div>
+
+        <div class="input-group">
+            <i class="fa fa-lock"></i>
+            <input type="password" id="password" placeholder="Password">
+            <i class="fa fa-eye eye" onclick="check()"></i>
+        </div>
+
+        <button onclick="login()">Sign In</button>
+
+        <div class="divider">New to the Portal?</div>
+
+        <button class="b2" onclick="studentregister()">
+            Register as Student
+        </button>
+
+        <button class="b2" onclick="teacheregister()">
+            Register as Teacher
+        </button>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+
+    <script>
+        function check() {
+            const pass = document.getElementById("password");
+            const eyeIcon = event.target;
+            
+            if (pass.type === "password") {
+                pass.type = "text";
+                eyeIcon.classList.remove("fa-eye");
+                eyeIcon.classList.add("fa-eye-slash");
+            } else {
+                pass.type = "password";
+                eyeIcon.classList.remove("fa-eye-slash");
+                eyeIcon.classList.add("fa-eye");
+            }
+        }
+
+        async function login() {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            const { data, error } = await client.auth.signInWithPassword({
+                email,
+                password
+            });
+
+            if (error) {
+                alert(error.message);
+                return;
+            }
+
+            const userId = data.user.id;
+
+            const { data: teacher } = await client
+                .from("teachers")
+                .select("*")
+                .eq("id", userId);
+
+            if (teacher.length > 0) {
+                if (teacher[0].is_admin) {
+                    window.location.href = "admin-dashboard.html";
+                } else {
+                    window.location.href = "teacher-dashboard.html";
+                }
+                return;
+            }
+
+            const { data: student } = await client
+                .from("students")
+                .select("*")
+                .eq("id", userId);
+
+            if (student.length > 0) {
+                window.location.href = "student-dashboard.html";
+                return;
+            }
+
+            alert("User role not found");
+        }
+
+        function studentregister() {
+            window.location.href = "student-register.html";
+        }
+
+        function teacheregister() {
+            window.location.href = "teacher-register.html";
+        }
+    </script>
+</body>
+</html>

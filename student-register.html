@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Register</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: url('images/student-reg-bg.jpeg');
+      background-size: cover;
+      animation: animated 1.2s ease-in;
+    }
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5); 
+      z-index: 1;
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      padding: 40px;
+      border-radius: 15px;
+      width: 380px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      animation: up 0.8s ease;
+      color: white;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 8px;
+      background: #003366;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #00509d;
+      transform: translateY(-2px);
+    }
+
+    @keyframes animated {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes up {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Student Registration</h2>
+
+  <input id="name" placeholder="Full Name">
+  <input id="email" placeholder="NITW Email (@student.nitw.ac.in)">
+  <input id="password" type="password" placeholder="Password">
+
+  <select id="branch">
+    <option value="">Select Branch</option>
+    <option value="CSE">CSE</option>
+    <option value="ECE">ECE</option>
+    <option value="EEE">EEE</option>
+    <option value="MECH">MECH</option>
+    <option value="CIVIL">CIVIL</option>
+    <option value="CHEMICAL">CHEMICAL</option>
+    <option value="BIOTECH">BIOTECH</option>
+    <option value="MME">MME</option>
+  </select>
+
+  <select id="section">
+    <option value="">Select Section</option>
+    <option value="A">A</option>
+    <option value="B">B</option>
+  </select>
+
+  <select id="year">
+    <option value="">Select Year</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+  </select>
+
+  <button onclick="registerStudent()">Register</button>
+</div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+
+<script>
+/**
+ * "Education is the manifestation of the perfection already in man." - KR
+ */
+
+async function registerStudent() {
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const branch = document.getElementById("branch").value;
+  const section = document.getElementById("section").value;
+  const year = document.getElementById("year").value;
+
+  if (!email.endsWith("@student.nitw.ac.in")) {
+    alert("Use your NIT Warangal student email only");
+    return;
+  }
+
+  if (!name || !email || !password || !branch || !section || !year) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  const { data, error } = await client.auth.signUp({
+    email,
+    password
+  });
+
+  if (error) {
+    if (error.message.includes("already registered")) {
+      alert("Email already exists. Please login.");
+      window.location.href = "login.html";
+    } else {
+      alert(error.message);
+    }
+    return;
+  }
+
+  const userId = data.user.id;
+
+  const { error: insertError } = await client.from("students").insert([{
+    id: userId,
+    name,
+    branch,
+    section,
+    studentyear: year
+  }]);
+
+  if (insertError) {
+    alert(insertError.message);
+    return;
+  }
+
+  alert("Registration successful!");
+  window.location.href = "login.html";
+}
+</script>
+
+</body>
+</html>

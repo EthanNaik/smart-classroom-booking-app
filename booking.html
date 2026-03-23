@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Book Classroom</title>
+
+<style>
+  *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI', sans-serif;
+  }
+
+  body{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg, #667eea, #764ba2);
+  }
+
+  .container{
+    width:400px;
+    padding:30px;
+    border-radius:20px;
+    background:rgba(255,255,255,0.1);
+    backdrop-filter:blur(15px);
+    color:white;
+    box-shadow:0 10px 30px rgba(0,0,0,0.3);
+    animation:animated 0.6s ease;
+  }
+
+  h2{
+    text-align:center;
+    margin-bottom:25px;
+  }
+
+  .form{
+    margin-bottom:18px;
+  }
+
+  select, input{
+    width:100%;
+    padding:10px;
+    border:none;
+    border-radius:10px;
+    outline:none;
+    background:rgba(255,255,255,0.2);
+    color:white;
+  }
+
+  option{
+    color:black;
+  }
+
+  button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:#ffd700;
+    color:black;
+    font-weight:bold;
+    cursor:pointer;
+  }
+
+  button:hover{
+    background:#ffc400;
+  }
+
+  @keyframes animated{
+    from{
+      opacity:0;
+      transform:translateY(20px);
+    }
+    to{
+      opacity:1;
+      transform:translateY(0);
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>Book Classroom</h2>
+
+  <div class="form">
+    <select id="department">
+      <option value="CSE">CSE</option>
+      <option value="ECE">ECE</option>
+      <option value="EEE">EEE</option>
+      <option value="MECH">MECH</option>
+      <option value="CIVIL">CIVIL</option>
+      <option value="CHEMICAL">CHEMICAL</option>
+      <option value="BIOTECH">BIOTECH</option>
+      <option value="MME">MME</option>
+    </select>
+  </div>
+
+  <div class="form">
+    <select id="section">
+      <option value="A">A</option>
+      <option value="B">B</option>
+    </select>
+  </div>
+
+  <div class="form">
+    <select id="year">
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+    </select>
+  </div>
+
+  <div class="form">
+    <input id="batch" type="number" placeholder="Batch Strength" min="1">
+  </div>
+
+  <div class="form">
+    <input id="date" type="date">
+  </div>
+
+  <div class="form">
+    <input id="time" type="time">
+  </div>
+
+  <div class="form">
+    <select id="room"></select>
+  </div>
+
+  <button onclick="book()">Book Now</button>
+</div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+
+<script>
+async function loadClassrooms(){
+  const { data, error } = await client.from("classrooms").select("*");
+
+  if(error){
+    alert("Error loading classrooms");
+    return;
+  }
+
+  const roomSelect = document.getElementById("room");
+  roomSelect.innerHTML = "";
+
+  data.forEach(room => {
+    const option = document.createElement("option");
+    option.value = room.classroom_id;
+    option.textContent = `Room ${room.classroom_id}`;
+    roomSelect.appendChild(option);
+  });
+}
+
+async function book(){
+  const { data: userData, error: userError } = await client.auth.getUser();
+
+  if(userError || !userData || !userData.user){
+    alert("Please login first");
+    window.location.href = "login.html";
+    return;
+  }
+
+  const department = document.getElementById("department").value;
+  const section = document.getElementById("section").value;
+  const year = parseInt(document.getElementById("year").value);
+  const batch = parseInt(document.getElementById("batch").value);
+  const date = document.getElementById("date").value;
+  const start = document.getElementById("time").value;
+  const room = document.getElementById("room").value;
+
+  if(!department || !section || !year || isNaN(batch) || batch <= 0 || !date || !start){
+    alert("Please fill all fields correctly");
+    return;
+  }
+
+  let parts = start.split(":");
+  let hour = parseInt(parts[0]) + 1;
+  let minutes = parts[1];
+  if(hour >= 24) hour = 23;
+  let end = (hour < 10 ? "0"+hour : hour) + ":" + minutes;
+
+  const { data, error } = await client.rpc("book_classroom", {
+    p_teacher_id: userData.user.id,
+    p_classroom_id: room,
+    p_department: department,
+    p_section: section,
+    p_studentyear: year,
+    p_date: date,
+    p_start: start,
+    p_end: end,
+    p_batch: batch
+  });
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  if(data === "Booking confirmed"){
+    alert("Booking successful!");
+    document.getElementById("batch").value = "";
+    document.getElementById("date").value = "";
+    document.getElementById("time").value = "";
+  } else {
+    alert(data);
+  }
+}
+
+loadClassrooms();
+</script>
+
+</body>
+</html>

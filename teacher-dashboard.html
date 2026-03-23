@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Teacher Dashboard</title>
+<style>
+*{
+ margin:0;
+ padding:0;
+ box-sizing:border-box;
+ font-family:'Segoe UI', sans-serif;
+}
+body{
+ display:flex;
+ height:100vh;
+ overflow:hidden;
+ background:linear-gradient(135deg, #667eea, #764ba2);
+}
+.sidebar{
+ width:250px;
+ background: rgba(0,0,0,0.7);
+ color: white;
+ padding: 20px;
+ display:flex;
+ flex-direction:column;
+ justify-content:space-between;
+}
+.sidebar h2{
+ margin-bottom: 30px;
+ text-align: center;
+}
+.menuitem{
+ padding: 12px;
+ margin: 10px 0;
+ cursor: pointer;
+ border-radius: 8px;
+ transition: 0.3s;
+}
+.menuitem:hover{
+ background: #667eea;
+ transform: translateX(5px);
+}
+.active{
+ background: #667eea;
+}
+.logout{
+ padding: 12px;
+ cursor: pointer;
+ border-radius:8px;
+ background:#ef4444;
+ text-align:center;
+}
+.logout:hover{
+ background:#dc2626;
+}
+.main{
+ flex: 1;
+ padding: 30px;
+ overflow-y: auto;
+ color: white;
+}
+.namebar{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin-bottom:20px;
+}
+.username{
+ background: rgba(255,255,255,0.2);
+ padding: 10px 18px;
+ border-radius: 20px;
+ font-weight: bold;
+}
+h2{
+ margin-bottom: 20px;
+}
+ul{
+ list-style: none;
+}
+li{
+ background: rgba(255,255,255,0.1);
+ margin-bottom: 15px;
+ padding: 15px;
+ border-radius: 12px;
+ backdrop-filter: blur(10px);
+ display: flex;
+ justify-content: space-between;
+ transition: 0.3s;
+}
+li:hover{
+ transform: scale(1.03);
+ background: rgba(255,255,255,0.2);
+}
+</style>
+</head>
+<body>
+<div class="sidebar">
+ <div>
+   <h2>Teacher</h2>
+   <div class="menuitem" onclick="bookingpage()">
+     Book Classroom
+   </div>
+   <div class="menuitem active">
+     My Bookings
+   </div>
+ </div>
+ <div class="logout" onclick="logout()">
+   Logout
+ </div>
+</div>
+<div class="main">
+ <div class="namebar">
+   <h2>My Bookings</h2>
+   <div class="username" id="username">Hello, Loading...</div>
+ </div>
+ <ul id="list"></ul>
+</div>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script>
+function bookingpage(){
+ window.location.href = "booking.html";
+}
+async function user(){
+ const { data: { session } } = await client.auth.getSession();
+ if(!session){
+   alert("Please login first");
+   window.location.href = "login.html";
+   return;
+ }
+ const userid = session.user.id;
+ const { data } = await client
+   .from("teachers")
+   .select("name")
+   .eq("id", userid)
+   .single();
+ if(data){
+   document.getElementById("username").innerText="Hello, "+data.name;
+ }
+}
+async function load() {
+ const list = document.getElementById("list");
+ list.innerHTML="Loading...";
+ const { data: { session } } = await client.auth.getSession();
+ if (!session) {
+   alert("Please login first");
+   return;
+ }
+ const teacherId = session.user.id;
+ const{ data, error }=await client
+   .from("bookings")
+   .select("*, classrooms(classroom_id)")
+   .eq("teacher_id", teacherId);
+ if(error){
+   alert(error.message);
+   return;
+ }
+ list.innerHTML="";
+ if (!data || data.length === 0) {
+   list.innerHTML="<li>No bookings found</li>";
+   return;
+ }
+ data.forEach(b => {
+   const li = document.createElement("li");
+   li.innerHTML=`
+     <span>
+      ${b.classrooms.classroom_id} | ${b.booking_date} | ${b.start_time}
+     </span>`;
+   list.appendChild(li);
+ });
+}
+async function logout(){
+ await client.auth.signOut();
+ alert("Logged out successfully");
+ window.location.href = "login.html";
+}
+user();
+load();
+</script>
+</body>
+</html>
