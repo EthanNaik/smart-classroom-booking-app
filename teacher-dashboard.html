@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+3. Teacher dashboard <!DOCTYPE html>
 <html>
 <head>
 <title>Teacher Dashboard</title>
@@ -84,11 +84,23 @@ li{
  backdrop-filter: blur(10px);
  display: flex;
  justify-content: space-between;
+ align-items:center;
  transition: 0.3s;
 }
 li:hover{
  transform: scale(1.03);
  background: rgba(255,255,255,0.2);
+}
+button{
+  background:#ef4444;
+  color:white;
+  border:none;
+  padding:8px 12px;
+  border-radius:8px;
+  cursor:pointer;
+}
+button:hover{
+  background:#dc2626;
 }
 </style>
 </head>
@@ -154,6 +166,7 @@ async function load() {
    alert(error.message);
    return;
  }
+ console.log(data);
  list.innerHTML="";
  if (!data || data.length === 0) {
    list.innerHTML="<li>No bookings found</li>";
@@ -163,10 +176,29 @@ async function load() {
    const li = document.createElement("li");
    li.innerHTML=`
      <span>
-      ${b.classrooms.classroom_id} | ${b.booking_date} | ${b.start_time}
-     </span>`;
+      ${b.classrooms ? b.classrooms.classroom_id : b.classroom_id} | ${b.booking_date} | ${b.start_time}
+     </span>
+     <button onclick="cancelBooking('${b.booking_id || ''}')">Cancel</button>
+   `;
    list.appendChild(li);
  });
+}
+async function cancelBooking(id){
+  if(!id) return;
+  if(!confirm("Are you sure you want to cancel this booking?")) return;
+
+  const { error } = await client
+    .from("bookings")
+    .delete()
+    .eq("booking_id", id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  alert("Booking cancelled");
+  load();
 }
 async function logout(){
  await client.auth.signOut();
